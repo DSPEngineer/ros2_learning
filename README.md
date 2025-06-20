@@ -1,5 +1,7 @@
 # Learning ROS2
 
 ## Using the _make_ Targets
+HELP is available by typing _make_ on the command line.
 
-## Using the <u>_Dockerfile_</u> for ROS2
+
+## Using the _Dockerfile_ for ROS2
