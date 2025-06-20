@@ -1,5 +1,5 @@
 # Learning ROS2
 
-## Using the __*make*__ Targets
+## Using the _make_ Targets
 
-## Using the _Dockerfile_
+## Using the <u>_Dockerfile_</u> for ROS2
