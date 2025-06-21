@@ -199,8 +199,8 @@ RUN userdel -r ubuntu \
   && echo "[[ -n \"\${SETUP}\" ]] && source \${SETUP}"         >> ${HOME_DIR}/.bashrc \
   && echo "export PATH=.:\$PATH:/opt/plotjuggler/install/plotjuggler/lib/plotjuggler" >> ${HOME_DIR}/.bashrc \
   && echo "[[ \$LD_LIBRARY_PATH != */usr/local/lib* ]] && export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/usr/local/lib"  >> ${HOME_DIR}/.bashrc \
-  && echo "[[ \$LD_LIBRARY_PATH != */opt/plotjuggler/install/plotjuggler/lib/plotjuggler* ]] && export LD_LIBRARY_PATH=/opt/plotjuggler/install/plotjuggler/lib/plotjuggler:\$LD_LIBRARY_PATH"  >> ${HOME_DIR}/.bashrc \
-  && chown -R ${USERNAME}:${USERNAME}  ${HOME_DIR}
+  && echo "[[ \$LD_LIBRARY_PATH != */opt/plotjuggler/install/plotjuggler/lib/plotjuggler* ]] && export LD_LIBRARY_PATH=/opt/plotjuggler/install/plotjuggler/lib/plotjuggler:\$LD_LIBRARY_PATH"  >> ${HOME_DIR}/.bashrc
+
 
 ########################################################################
 # create workspace and source dir
@@ -215,13 +215,6 @@ ADD ./dds_config ${DDS_CONFIG_DIR}
 # install deps as non-root user
 WORKDIR ${WORKSPACE}
 USER ${USERNAME}
-
-# RUN /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash \
-#   && sudo apt update
-#   && sudo rosdep init
-#   && rosdep update --rosdistro ${ROS_DISTRO} \
-#   && rosdep install -y -r -i --from-paths ${WORKSPACE} \
-#   && sudo rm -rf /var/lib/apt/lists/*"
 
 # by default hold container open in background
 CMD ["tail", "-f", "/dev/null"]
