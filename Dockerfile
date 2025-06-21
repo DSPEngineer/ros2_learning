@@ -197,7 +197,7 @@ RUN userdel -r ubuntu \
   && echo "source /opt/plotjuggler/install/setup.bash"         >> ${HOME_DIR}/.bashrc \
   && echo "SETUP=\"\$(find ${WORKSPACE} -name setup.bash)\""   >> ${HOME_DIR}/.bashrc \
   && echo "[[ -n \"\${SETUP}\" ]] && source \${SETUP}"         >> ${HOME_DIR}/.bashrc \
-  && echo "export PATH=\$PATH:/opt/plotjuggler/install/plotjuggler/lib/plotjuggler" >> ${HOME_DIR}/.bashrc \
+  && echo "export PATH=.:\$PATH:/opt/plotjuggler/install/plotjuggler/lib/plotjuggler" >> ${HOME_DIR}/.bashrc \
   && echo "[[ \$LD_LIBRARY_PATH != */usr/local/lib* ]] && export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/usr/local/lib"  >> ${HOME_DIR}/.bashrc \
   && echo "[[ \$LD_LIBRARY_PATH != */opt/plotjuggler/install/plotjuggler/lib/plotjuggler* ]] && export LD_LIBRARY_PATH=/opt/plotjuggler/install/plotjuggler/lib/plotjuggler:\$LD_LIBRARY_PATH"  >> ${HOME_DIR}/.bashrc \
   && chown -R ${USERNAME}:${USERNAME}  ${HOME_DIR}

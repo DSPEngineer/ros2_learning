@@ -45,9 +45,7 @@ version: ## print the package version
 
 .PHONY: run
 run: ## start container with shell
-	@xhost +local:*
-	@cd $(SRC_DIR)
-	@echo  "$(shell pwd) : $(SRC_DIR)" 
+	@xhost +local:* >> /dev/null
 	@docker run -i $(DOCKER_RUN_ARGS) \
 		--name $(PACKAGE) \
 		$(CONTAINER) \
