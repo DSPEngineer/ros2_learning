@@ -18,7 +18,7 @@ class myNode(Node):
     def timer_callback(self):
         # This method will be called periodically by the timer
         self.get_logger().info('Timer callback executed.')
-        self.get_logger().info('  -- Help me Obi-Wan Kenobi! You are my only hope.')
+        self.get_logger().info('  -- Help me Obi-Wan Kanobi! You are my only hope.')
 
 
 def main(args=None):

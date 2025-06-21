@@ -1,0 +1,14 @@
+#! /usr/bin/bash
+
+DIRS="build install log"
+
+for d in $DIRS
+do
+    if [[ -d $d ]]
+    then
+        rm -rf ${d}
+        echo " Remove: ${d}"
+    else
+        echo "MISSING: ${d}"
+    fi
+done
