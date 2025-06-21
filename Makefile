@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-RUN_DIR ?= $(shell pwd)
+SRC_DIR ?= $(shell pwd)
 
 PACKAGE=ros2-control-workshop-container
 VERSION:=0.3.0
@@ -31,7 +31,7 @@ DOCKER_RUN_ARGS=--rm -t \
 		--volume ${HOME}/.local:$(USR_HOME)/.local \
 		--volume ${HOME}/.ssh:$(USR_HOME)/.ssh \
 		--volume /dev:/dev:rw \
-		--volume $(RUN_DIR):$(WORKSPACE)
+		--volume $(SRC_DIR):$(WORKSPACE)
 
 #		--volume $(PWD):$(WORKSPACE)
 
@@ -45,9 +45,9 @@ version: ## print the package version
 
 .PHONY: run
 run: ## start container with shell
-	xhost +local:*
-	@cd $(RUN_DIR)
-	@echo  "$(shell pwd) : $(RUN_DIR)" 
+	@xhost +local:*
+	@cd $(SRC_DIR)
+	@echo  "$(shell pwd) : $(SRC_DIR)" 
 	@docker run -i $(DOCKER_RUN_ARGS) \
 		--name $(PACKAGE) \
 		$(CONTAINER) \

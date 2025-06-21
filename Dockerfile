@@ -140,6 +140,8 @@ RUN  apt update \
      && apt autoremove -y \
      && apt clean  \
      && rm -rf /var/lib/apt/lists/*  \
+     && rosdep init \
+     && rosdep update --rosdistro ${ROS_DISTRO} \
      && mkdir -p /opt/plotjuggler/src  \
      && cd /opt/plotjuggler/src  \
      && git clone https://github.com/PlotJuggler/plotjuggler_msgs.git  \
@@ -151,6 +153,7 @@ RUN  apt update \
      && export CMAKE_PREFIX_PATH=/opt/ros/${ROS_DISTRO} \
      && export ROS_VERSION=2  \
      && export ROS_PYTHON_VERSION=3  \
+     && rosdep install --from-paths src --ignore-src -y  \
      && colcon build \
             --cmake-args \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -197,7 +200,7 @@ RUN userdel -r ubuntu \
   && echo "export PATH=\$PATH:/opt/plotjuggler/install/plotjuggler/lib/plotjuggler" >> ${HOME_DIR}/.bashrc \
   && echo "[[ \$LD_LIBRARY_PATH != */usr/local/lib* ]] && export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/usr/local/lib"  >> ${HOME_DIR}/.bashrc \
   && echo "[[ \$LD_LIBRARY_PATH != */opt/plotjuggler/install/plotjuggler/lib/plotjuggler* ]] && export LD_LIBRARY_PATH=/opt/plotjuggler/install/plotjuggler/lib/plotjuggler:\$LD_LIBRARY_PATH"  >> ${HOME_DIR}/.bashrc \
-  && chown -R ${USERNAME}: ${HOME_DIR}
+  && chown -R ${USERNAME}:${USERNAME}  ${HOME_DIR}
 
 ########################################################################
 # create workspace and source dir
@@ -208,22 +211,17 @@ WORKDIR ${WORKSPACE}
 # setup dds config
 ADD ./dds_config ${DDS_CONFIG_DIR}
 
-# enable either cyclone dds or fast rtps
-
-# copy code into workspace and set ownership to user
-##ADD --chown=${USERNAME}:${USERNAME} ./src ${WORKSPACE}/src
-
 ########################################################################
 # install deps as non-root user
 WORKDIR ${WORKSPACE}
 USER ${USERNAME}
 
-RUN /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash \
-  && sudo apt update \
-  && sudo rosdep init \
-  && rosdep update --rosdistro ${ROS_DISTRO} \
-  && rosdep install -y -r -i --from-paths ${WORKSPACE}/src \
-  && sudo rm -rf /var/lib/apt/lists/*"
+# RUN /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash \
+#   && sudo apt update
+#   && sudo rosdep init
+#   && rosdep update --rosdistro ${ROS_DISTRO} \
+#   && rosdep install -y -r -i --from-paths ${WORKSPACE} \
+#   && sudo rm -rf /var/lib/apt/lists/*"
 
 # by default hold container open in background
 CMD ["tail", "-f", "/dev/null"]
