@@ -1,6 +1,7 @@
 # Launch file for Subscriber node
 from launch import LaunchDescription
 from launch_ros.actions import Node
+
 def generate_launch_description():
     return LaunchDescription([
         Node(
@@ -8,8 +9,8 @@ def generate_launch_description():
             executable='simpleSubscriber',
             name='simple_subscriber_node',
             output='screen',
-            parameters=[{'use_sim_time': True}],
-            remappings=[('/cmd_vel', '/cmd_vel')]
+            ## parameters=[{'use_sim_time': True}],
+            ## remappings=[('/cmd_vel', '/cmd_vel')]
         )
     ])
 # This launch file is used to start the simple subscriber node in the mysub package.
