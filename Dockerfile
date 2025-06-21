@@ -8,8 +8,12 @@ ARG DEBIAN_FRONTEND="noninteractive"
 ARG RUN_AS_UID=1000
 ARG RUN_AS_GID=1000
 
-ENV LANG=C.UTF-8
-ENV LC_ALL=C.UTF-8
+ENV LANGUAGE=en
+ENV COUNTRY=US
+ENV LOCALE=UTF-8
+ENV LANG="${LANGUAGE}_${COUNTRY}.${LOCALE}"
+ENV LC_ALL="${LANG}"
+
 ENV ROS_DISTRO="jazzy"
 ENV CYCLONEDDS_URI="${DDS_CONFIG_DIR}/cyclonedds.xml"
 ENV FASTRTPS_DEFAULT_PROFILES_FILE="${DDS_CONFIG_DIR}/fastrtps.xml"
@@ -20,41 +24,56 @@ ENV RMW_IMPLEMENTATION="rmw_cyclonedds_cpp"
 
 
 ################################################################################
-# setup utc timeszone & install base ubuntu packages
-RUN echo 'Etc/UTC' > /etc/timezone  \
-  && ln -s /usr/share/zoneinfo/Etc/UTC /etc/localtime \
-  && apt-get update && apt-get install -q -y --no-install-recommends \
-    bash-completion \
-    build-essential \
-    curl \
-    dirmngr \
-    emacs \
-    git \
-    gnupg2 \
-    iproute2 \
-    net-tools \
-    ssh \
-    python-is-python3 \
-    python3-pip \
-    software-properties-common \
-    sudo \
-    tzdata \
-    usbutils \
-    wget \
-    x11-apps \
-    xauth \
+# setup utc timeszone
+# Enable Ubuntu Universe property
+#
+#
+RUN  apt update \
+  && apt install -y -q \
+           locales \
+           software-properties-common \
+           tzdata \
+  && apt autoremove -y \
   && add-apt-repository universe \
+  && rm -rf /var/lib/apt/lists/* \
+  && locale-gen ${LANG}  ${LANG} \
+  && update-locale LC_ALL=${LANG} LANG=${LANG}
+
+
+################################################################################
+# install base ubuntu packages
+RUN  apt update \
+  && apt install -q -y --no-install-recommends \
+           bash-completion \
+           build-essential \
+           curl \
+           dirmngr \
+           emacs \
+           git \
+           gnupg2 \
+           iproute2 \
+           net-tools \
+           ssh \
+           python-is-python3 \
+           python3-pip \
+           sudo \
+           usbutils \
+           wget \
+           x11-apps \
+           xauth \
+  && apt autoremove -y \
   && rm -rf /var/lib/apt/lists/*
 
 
 ################################################################################
 # setup ros package overlay & install ros packages
 RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
-    -o /usr/share/keyrings/ros-archive-keyring.gpg \
+         -o /usr/share/keyrings/ros-archive-keyring.gpg \
   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
-    http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
-    | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null \
-  && apt-get update && apt-get install -q -y --no-install-recommends \
+           http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
+        | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null \
+  && apt update \
+  && apt install -q -y --no-install-recommends \
     python3-colcon-common-extensions \
     python3-colcon-mixin \
     python3-debugpy \
@@ -64,17 +83,18 @@ RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
     ros-${ROS_DISTRO}-rmw-fastrtps-cpp \
     ros-${ROS_DISTRO}-desktop \
     ros-${ROS_DISTRO}-ros-gz \
+  && apt autoremove -y \
   && rm -rf /var/lib/apt/lists/*
 
 
 ################################################################################
 # setup colcon mixin and metadata
 RUN colcon mixin add default \
-    https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml && \
-  colcon mixin update default && \
-  colcon metadata add default \
-    https://raw.githubusercontent.com/colcon/colcon-metadata-repository/master/index.yaml && \
-  colcon metadata update
+        https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml \
+  && colcon mixin update default \
+  && colcon metadata add default \
+         https://raw.githubusercontent.com/colcon/colcon-metadata-repository/master/index.yaml \
+  && colcon metadata update
 
 
 ################################################################################
@@ -117,8 +137,8 @@ RUN  apt update \
                  ros-${ROS_DISTRO}-rclcpp-components \
                  ros-${ROS_DISTRO}-rosidl-default-generators \
                  ros-${ROS_DISTRO}-rosidl-default-runtime \
-     && apt-get autoremove -y \
-     && apt-get clean  \
+     && apt autoremove -y \
+     && apt clean  \
      && rm -rf /var/lib/apt/lists/*  \
      && mkdir -p /opt/plotjuggler/src  \
      && cd /opt/plotjuggler/src  \
@@ -147,8 +167,8 @@ RUN  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor
   && rm -f packages.microsoft.gpg \
   && apt update \
   && apt install code -q -y \
-  && apt-get autoremove -y \
-  && apt-get clean \
+  && apt autoremove -y \
+  && apt clean \
   && rm -rf /var/lib/apt/lists/
 
 
@@ -191,7 +211,7 @@ ADD ./dds_config ${DDS_CONFIG_DIR}
 # enable either cyclone dds or fast rtps
 
 # copy code into workspace and set ownership to user
-ADD --chown=${USERNAME}:${USERNAME} ./src ${WORKSPACE}/src
+##ADD --chown=${USERNAME}:${USERNAME} ./src ${WORKSPACE}/src
 
 ########################################################################
 # install deps as non-root user
@@ -199,7 +219,7 @@ WORKDIR ${WORKSPACE}
 USER ${USERNAME}
 
 RUN /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash \
-  && sudo apt-get update \
+  && sudo apt update \
   && sudo rosdep init \
   && rosdep update --rosdistro ${ROS_DISTRO} \
   && rosdep install -y -r -i --from-paths ${WORKSPACE}/src \

@@ -3,7 +3,7 @@ SHELL := /bin/bash
 RUN_DIR ?= $(shell pwd)
 
 PACKAGE=ros2-control-workshop-container
-VERSION:=0.1.0
+VERSION:=0.3.0
 PLATFORM=linux/amd64
 # PLATFORM=linux/arm64
 CONTAINER:=ghcr.io/freshrobotics/$(PACKAGE)-$(PLATFORM):$(VERSION)
