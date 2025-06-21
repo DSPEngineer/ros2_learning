@@ -10,8 +10,8 @@ def generate_launch_description():
             executable='simplePublisher',
             name='simple_publisher_node',
             output='screen',
-            #parameters=[{'use_sim_time': True}],
-            #remappings=[('/cmd_vel', '/robot/cmd_vel')]
+            ##parameters=[{'use_sim_time': True}],
+            ## remappings=[('/cmd_vel', '/robot/cmd_vel')]
         )
     ])
 

@@ -8,7 +8,10 @@ from geometry_msgs.msg import TwistStamped
 
 ## Publisher node's class
 class SimplePublisher(Node):
- 
+
+    dx = 1
+    val=0
+
     def __init__(self):
         ## Call te base class with the node's name "simplePublisher"
         super().__init__('simplePublisher')
@@ -20,12 +23,17 @@ class SimplePublisher(Node):
         self.get_logger().info('Simple Publisher Node has been initialized.')
 
     def timer_callback(self):
+        if self.val > 99.0:
+            self.dx = -1
+        elif self.dx < -99.0:
+            self.dx = 1
+        self.val += self.dx * 0.5
         msg = TwistStamped()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = 'base_link'
         msg.twist.linear.x = 0.0
-        msg.twist.angular.z = 0.5
-        self.publisher_.publish(msg)
+        msg.twist.angular.z = self.val
+        self.publisher_.publish( msg )
         self.get_logger().info('Publishing: Linear X: %f, Angular Z: %f' % (msg.twist.linear.x, msg.twist.angular.z))
 
 
