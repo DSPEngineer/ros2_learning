@@ -211,10 +211,22 @@ WORKDIR ${WORKSPACE}
 # setup dds config
 ADD ./dds_config ${DDS_CONFIG_DIR}
 
+# enable either cyclone dds or fast rtps
+
+# copy code into workspace and set ownership to user
+### ADD --chown=${USERNAME}:${USERNAME} ./src ${WORKSPACE}/src
+
 ########################################################################
 # install deps as non-root user
 WORKDIR ${WORKSPACE}
 USER ${USERNAME}
+
+# RUN /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash \
+#   && sudo apt-get update \
+#   && sudo rosdep init \
+#   && rosdep update --rosdistro ${ROS_DISTRO} \
+#   && rosdep install -y -r -i --from-paths ${WORKSPACE}/src \
+#   && sudo rm -rf /var/lib/apt/lists/*"
 
 # by default hold container open in background
 CMD ["tail", "-f", "/dev/null"]
