@@ -1,9 +1,9 @@
 SHELL := /bin/bash
 
-RUN_DIR ?= $(shell pwd)
+SRC_DIR ?= $(shell pwd)
 
 PACKAGE=ros2-control-workshop-container
-VERSION:=0.1.0
+VERSION:=0.3.0
 PLATFORM=linux/amd64
 # PLATFORM=linux/arm64
 CONTAINER:=ghcr.io/freshrobotics/$(PACKAGE)-$(PLATFORM):$(VERSION)
@@ -31,9 +31,7 @@ DOCKER_RUN_ARGS=--rm -t \
 		--volume ${HOME}/.local:$(USR_HOME)/.local \
 		--volume ${HOME}/.ssh:$(USR_HOME)/.ssh \
 		--volume /dev:/dev:rw \
-		--volume $(RUN_DIR):$(WORKSPACE)
-
-#		--volume $(PWD):$(WORKSPACE)
+		--volume $(SRC_DIR):$(WORKSPACE)
 
 PHONY: help
 help: ## show help message
@@ -45,9 +43,7 @@ version: ## print the package version
 
 .PHONY: run
 run: ## start container with shell
-	xhost +local:*
-	@cd $(RUN_DIR)
-	@echo  "$(shell pwd) : $(RUN_DIR)" 
+	@xhost +local:* >> /dev/null
 	@docker run -i $(DOCKER_RUN_ARGS) \
 		--name $(PACKAGE) \
 		$(CONTAINER) \
